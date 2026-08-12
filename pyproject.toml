@@ -7,8 +7,10 @@ name = "icPhysics"
 version = "0.0.1"
 description = "Shared precipitation and conductance physics for IMAGE-FUV research"
 requires-python = ">=3.10"
-dependencies = ["numpy"]
+dependencies = ["numpy", "scipy", "netCDF4", "tqdm", "zhangpaxton2008"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+icphysics = ["data/*.nc"]

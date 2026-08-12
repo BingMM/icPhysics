@@ -77,3 +77,52 @@ def halluncertainty(E0, Fe, dE0, dFe, varE0Fe):
 
     return dH
 
+
+def robinson_conductance(E0, Fe, dE0, dFe, varE0Fe):
+    """Calculate Hall/Pedersen conductance and propagated uncertainty."""
+
+    E0 = np.asarray(E0, dtype=float)
+    Fe = np.asarray(Fe, dtype=float)
+    dE0 = np.asarray(dE0, dtype=float)
+    dFe = np.asarray(dFe, dtype=float)
+    varE0Fe = np.asarray(varE0Fe, dtype=float)
+
+    if not (E0.shape == Fe.shape == dE0.shape == dFe.shape == varE0Fe.shape):
+        raise ValueError("all precipitation arrays must have one shape")
+
+    P = ped(E0, Fe)
+    H = hall(E0, Fe)
+    dP = np.full(E0.shape, np.nan)
+    dH = np.full(E0.shape, np.nan)
+
+    valid = np.isfinite(E0 + Fe + dE0 + dFe + varE0Fe)
+    zero_flux = valid & (Fe == 0)
+    dP[zero_flux] = ped(E0[zero_flux], dFe[zero_flux])
+    dH[zero_flux] = hall(E0[zero_flux], dFe[zero_flux])
+
+    nonzero = valid & (Fe > 0)
+    denominator = 16 + E0[nonzero]**2
+
+    dP_dE0 = (
+        40 / denominator - 80 * (E0[nonzero] / denominator)**2
+    ) * np.sqrt(Fe[nonzero])
+    dP_dFe = 40 * E0[nonzero] / denominator / (2 * np.sqrt(Fe[nonzero]))
+    dP[nonzero] = np.sqrt(
+        dP_dE0**2 * dE0[nonzero]**2
+        + dP_dFe**2 * dFe[nonzero]**2
+        + 2 * dP_dE0 * dP_dFe * varE0Fe[nonzero]
+    )
+
+    dH_dE0 = (
+        18 * E0[nonzero]**0.85 / denominator
+        * (1.85 - 2 * E0[nonzero]**2 / denominator)
+        * np.sqrt(Fe[nonzero])
+    )
+    dH_dFe = 9 * E0[nonzero]**1.85 / denominator / np.sqrt(Fe[nonzero])
+    dH[nonzero] = np.sqrt(
+        dH_dE0**2 * dE0[nonzero]**2
+        + dH_dFe**2 * dFe[nonzero]**2
+        + 2 * dH_dE0 * dH_dFe * varE0Fe[nonzero]
+    )
+
+    return {"P": P, "H": H, "dP": dP, "dH": dH}

@@ -1,16 +1,26 @@
 # Current State
 
-Last reviewed: 2026-08-11
-Repository snapshot: `core_physics` at `c3d3cad`
-Worktree state: initial package, TODO, and Robinson extraction uncommitted
+Last reviewed: 2026-08-12
+Repository snapshot: `core_physics` at `8e63215`
+Worktree state: crude precipitation and Zhang--Paxton extraction uncommitted
 
 ## Current position
 
-The first implementation slice is in place. The repository now has minimal
-package metadata and a direct extraction of the Robinson Hall/Pedersen forward
-and uncertainty equations. Two small regression tests pass, and a direct
-source-versus-extracted comparison is numerically identical for the tested
-ordinary case.
+The crude shared-physics implementation is in place. Alongside Robinson, the
+package now contains the copied IMAGE response tables, SI12 proton correction,
+WIC/SI13 ratio method, WIC energy-flux conversion, uncertainty and E0--Fe
+covariance, Zhang--Paxton collapse, bundled lookup table, loader, and lookup
+generator.
+
+`proton_correct_images()` now exposes SI12-based proton correction separately.
+`precipitation_from_ratio()` accepts corrected WIC/SI13 arrays, while
+`precipitation_from_zhang_paxton()` accepts corrected WIC plus Kp and MLT.
+icBuilder performs correction once before selecting either precipitation
+method. A frozen scalar comparison matches the legacy combined ratio routine.
+
+`robinson_conductance()` is the array entry point for Product 3. It returns
+Hall/Pedersen conductance and propagated uncertainty, including the established
+one-sided uncertainty at zero energy flux.
 
 Zhang--Paxton ownership is now settled: `ZhangPaxton2008` retains the published
 base model, while icPhysics will own the latitude collapse, uncertainty and
@@ -39,6 +49,6 @@ eventually call icPhysics and contain no Zhang--Paxton implementation.
 
 ## Next action
 
-Copy the existing IMAGE response tables, SI12 proton correction, WIC energy
-flux conversion, and R method with minimal restructuring. Their detailed work
-list is in `TODO.md`.
+Confirm that icAnalyzer can import the package and call the functions on a
+batched array. Cleanup, module splitting, and removal of the old icBuilder
+copies remain intentionally deferred.

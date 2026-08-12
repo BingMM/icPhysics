@@ -2,7 +2,9 @@
 
 import numpy as np
 
-from icphysics import hall, halluncertainty, ped, peduncertainty
+from icphysics import (
+    hall, halluncertainty, ped, peduncertainty, robinson_conductance,
+)
 
 
 def test_robinson_reference_values():
@@ -24,3 +26,22 @@ def test_zero_flux_uses_one_sided_excursion():
 
     assert peduncertainty(E0, 0.0, 1.0, dFe, 0.0) == ped(E0, dFe)
     assert halluncertainty(E0, 0.0, 1.0, dFe, 0.0) == hall(E0, dFe)
+
+
+def test_array_entry_point_matches_scalar_equations():
+    E0 = np.array([2.0, 4.0, 3.0])
+    Fe = np.array([1.5, 0.0, np.nan])
+    dE0 = np.array([0.2, 0.3, 0.4])
+    dFe = np.array([0.1, 0.2, 0.3])
+    covariance = np.array([-0.01, 0.0, 0.0])
+
+    result = robinson_conductance(E0, Fe, dE0, dFe, covariance)
+
+    np.testing.assert_allclose(result["P"][:2], ped(E0[:2], Fe[:2]))
+    np.testing.assert_allclose(result["H"][:2], hall(E0[:2], Fe[:2]))
+    np.testing.assert_allclose(
+        result["dP"][0],
+        peduncertainty(E0[0], Fe[0], dE0[0], dFe[0], covariance[0]),
+    )
+    np.testing.assert_allclose(result["dP"][1], ped(E0[1], dFe[1]))
+    assert np.isnan(result["dH"][2])

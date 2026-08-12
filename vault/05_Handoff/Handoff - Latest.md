@@ -1,15 +1,32 @@
 # Handoff - Latest
 
-Last updated: 2026-08-11
-Repository snapshot: `core_physics` at `c3d3cad`
-Worktree state: initial project memory, package, TODO, and Robinson extraction uncommitted
+Last updated: 2026-08-12
+Repository snapshot: `core_physics` at `8e63215`
+Worktree state: crude precipitation and Zhang--Paxton extraction uncommitted
 
 ## Project state
 
-`icPhysics` now has a minimal `src/icphysics` package and the first copied
-scientific module. Robinson Hall/Pedersen conductance and uncertainty match the
-current icBuilder source for the checked ordinary case, including the existing
-one-sided zero-flux rule. Two focused tests pass.
+`icPhysics` now contains the crude shared calculation chain: Robinson,
+camera-response tables, SI12 proton correction, the R method, WIC-derived
+electron energy flux and uncertainty, E0--Fe covariance, Zhang--Paxton
+collapse, the bundled 8.4-MB lookup table, loader, and generator. Two public
+functions match the `PrecipitationImage` input/output boundary.
+
+SI12 proton correction is now the public `proton_correct_images()` step.
+`precipitation_from_ratio()` consumes corrected WIC/SI13 arrays and
+`precipitation_from_zhang_paxton()` consumes corrected WIC plus Kp and MLT.
+icBuilder calls correction once before method selection. The separated ratio
+path matches the legacy combined calculation in a frozen reference case.
+
+The public array-based `robinson_conductance()` entry point now supports the
+modular icBuilder Product-3 boundary and preserves the scalar equations and
+zero-flux uncertainty behavior in focused tests.
+
+The copied table has the same SHA-256 as icBuilder. A small ratio-method
+comparison matched the original scalar routine exactly. The new and old
+Zhang--Paxton paths also matched exactly for every saved Product-2 field over
+complete example orbit 0085. The two icPhysics Robinson tests and nine focused
+icBuilder Product-2 tests pass.
 
 The dependency boundary is confirmed: icAnalyzer must not depend on the full
 icBuilder package and inherit fuvpy or other production-pipeline dependencies.
@@ -18,9 +35,8 @@ remains authoritative for the published model equations.
 
 ## Next action
 
-Follow `TODO.md`: copy the camera responses and SI12 proton correction, then
-the shared WIC electron-flux calculation and R method. Keep the code close to
-icBuilder until an end-to-end comparison works.
+Run an icAnalyzer batched-array import check. Keep cleanup and removal of the
+old icBuilder copies separate from this verified crude extraction.
 
 Do not start the staged file-product redesign or VAE integration in this
 repository. Those consuming-project changes follow only after the shared
@@ -40,10 +56,9 @@ calculation is stable.
 ## Portfolio impact
 
 - Central update needed: Yes
-- Changes: first reference-tested physics extraction implemented; Zhang--Paxton
-  lookup ownership assigned to icPhysics.
-- Sync summary: the next bounded milestone is the copied proton correction and
-  electron-flux/R-method chain.
+- Changes: crude precipitation chain implemented and connected to icBuilder;
+  exact small and orbit-level comparisons passed.
+- Sync summary: the next bounded milestone is an icAnalyzer batch/import check.
 
 ## Entry points
 

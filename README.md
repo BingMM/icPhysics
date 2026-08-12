@@ -14,4 +14,14 @@ Sigma_P = ped(E0, Fe)
 Sigma_H = hall(E0, Fe)
 ```
 
+The crude precipitation API is also available:
+
+```python
+from icphysics import precipitation_from_ratio
+from icphysics import precipitation_from_zhang_paxton
+```
+
+`ZhangPaxton2008` supplies the published empirical model. icPhysics contains
+the IMAGE-specific latitude collapse and bundled Kp lookup table.
+
 Licensed under the MIT License.
