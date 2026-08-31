@@ -3,7 +3,15 @@
 import numpy as np
 
 from icphysics.image import E0_eflux_propagated
-from icphysics import precipitation_from_ratio, proton_correct_images
+from icphysics import (
+    PROTON_RESPONSE_ENERGY_RANGE,
+    precipitation_from_ratio,
+    proton_correct_images,
+)
+
+
+def test_proton_response_energy_range_matches_frey_table():
+    assert PROTON_RESPONSE_ENERGY_RANGE == (0.47, 46.7)
 
 
 def test_separate_proton_correction_matches_legacy_ratio_calculation():

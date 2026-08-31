@@ -24,4 +24,18 @@ from icphysics import precipitation_from_zhang_paxton
 `ZhangPaxton2008` supplies the published empirical model. icPhysics contains
 the IMAGE-specific latitude collapse and bundled Kp lookup table.
 
+The Hardy et al. (1991) statistical ion-precipitation model is available as a
+separate pure-array calculation:
+
+```python
+from icphysics import hardy_ion_precipitation
+
+ions = hardy_ion_precipitation(kp=2, mlt=0, mlat=67)
+proton_energy = ions["mean_energy"]  # keV
+```
+
+The Hardy coordinates are corrected geomagnetic latitude and MLT. Modified
+Apex latitude, as used by the IMAGE pipeline, is a close but not identical
+approximation.
+
 Licensed under the MIT License.

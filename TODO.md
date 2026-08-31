@@ -1,6 +1,6 @@
 # TODO
 
-Last reviewed: 2026-08-12
+Last reviewed: 2026-08-30
 
 ## First working version
 
@@ -16,7 +16,13 @@ Last reviewed: 2026-08-12
   `precipitation_from_ratio()` and `precipitation_from_zhang_paxton()`.
 - [x] Replace the placeholder functions in `icBuilder.PrecipitationImage`.
 - [x] Compare one complete orbit before removing the old icBuilder routines.
+- [x] Transcribe the Hardy et al. (1991) ion-model coefficients.
+- [x] Implement and test the Hardy number flux, energy flux, and mean energy.
 - [ ] Confirm that icAnalyzer can call the functions on batched arrays.
+- [ ] Compare corrected geomagnetic and Modified Apex coordinates over the
+  IMAGE grid before using Hardy in the production pipeline.
+- [ ] Test Hardy proton energies in the reconstructed Frey event before
+  changing the production proton-correction method.
 
 ## Ownership
 

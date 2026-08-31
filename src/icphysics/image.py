@@ -9,6 +9,11 @@ P1 = np.array([145,319,554,601,562])       # WIC counts in response to 1 mW/m² 
 P2 = np.array([23.7,35.6,30.2,17.0,11.7])  # SI-12 proton counts per 1 mW/m², nominal exposure of 5 s, Table III
 P3 = np.array([2.14,4.39,7.09,7.20,6.51])  # SI-13 counts in response to 1 mW/m² proton energy flux, Table VIII
 
+# The camera-response tables contain no information outside this energy range.
+# Calling pipelines can preserve a model's raw energy while clipping the value
+# supplied to these response curves.
+PROTON_RESPONSE_ENERGY_RANGE = (float(PE[0]), float(PE[-1]))
+
 fP1 = interp1d(PE,P1,kind='linear')
 fP2 = interp1d(PE,P2,kind='linear')
 fP3 = interp1d(PE,P3,kind='linear')
@@ -188,11 +193,9 @@ def fdTm(Ep,dEp):
 def proton_response(Ep, dEp):
     """Evaluate the six orbit-invariant proton response quantities.
 
-    ``Ep`` and ``dEp`` are scalars for a complete ``ConductanceImage``.  The
-    response of each camera and its propagated model uncertainty therefore
-    need to be evaluated only once, rather than once for every valid pixel.
-    The ordinary dictionary keeps the names and physical roles visible where
-    the values are used by the scalar and vector calculations.
+    ``Ep`` and ``dEp`` may be scalars or broadcast-compatible arrays. The
+    ordinary dictionary keeps the names and physical roles visible where the
+    values are used by the scalar and vector calculations.
     """
 
     return {

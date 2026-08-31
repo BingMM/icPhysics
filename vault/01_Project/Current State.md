@@ -1,8 +1,9 @@
 # Current State
 
-Last reviewed: 2026-08-12
-Repository snapshot: `core_physics` at `8e63215`
-Worktree state: crude precipitation and Zhang--Paxton extraction uncommitted
+Last reviewed: 2026-08-31
+Repository snapshot: `hardy-coefficients` at `069494f`
+Worktree state: Hardy coefficients, evaluator, tests, and documentation are
+uncommitted; the earlier project-memory checkpoint remains modified
 
 ## Current position
 
@@ -11,6 +12,22 @@ package now contains the copied IMAGE response tables, SI12 proton correction,
 WIC/SI13 ratio method, WIC energy-flux conversion, uncertainty and E0--Fe
 covariance, Zhang--Paxton collapse, bundled lookup table, loader, and lookup
 generator.
+
+The full Hardy et al. (1991) Table 1 is transcribed in
+`hardy_coefficients.py`, and `hardy.py` now implements the published Fourier,
+generalized-Epstein, background-limit, and Kp-interpolation equations. The
+public `hardy_ion_precipitation()` function returns ion number flux, energy
+flux, and mean energy for broadcast-compatible Kp, MLT, and latitude arrays.
+The 1092 coefficients were visually checked against the rendered paper table.
+The evaluator reproduces the morphology of the paper's Kp 0, 2, and 4 model
+maps and agrees within 12% at four independent mean-energy checkpoints from
+the original 1989 statistical tables.
+
+Hardy is now connected to icBuilder's modular Product-2 proton correction.
+icPhysics publicly exposes the 0.47--46.7 keV domain of the Frey proton camera-
+response tables so the caller can preserve raw model energy while clipping the
+response input explicitly. The response functions accept spatial Ep/dEp
+arrays; SI12 still supplies the event-specific proton flux.
 
 `proton_correct_images()` now exposes SI12-based proton correction separately.
 `precipitation_from_ratio()` accepts corrected WIC/SI13 arrays, while
@@ -49,6 +66,9 @@ eventually call icPhysics and contain no Zhang--Paxton implementation.
 
 ## Next action
 
-Confirm that icAnalyzer can import the package and call the functions on a
-batched array. Cleanup, module splitting, and removal of the old icBuilder
-copies remain intentionally deferred.
+Repeat the complete-corpus image-ratio diagnostics with Hardy proton energy.
+Keep the corrected-geomagnetic versus Modified-Apex coordinate approximation
+explicit when interpreting the result.
+
+The pre-existing icAnalyzer batched-array import check, cleanup, and removal of
+old icBuilder copies remain deferred.
